@@ -13,7 +13,12 @@
 	</array>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
-		<dict/>
+		<dict>
+			<key>UTTypeIcons</key>
+			<dict/>
+			<key>UTTypeTagSpecification</key>
+			<dict/>
+		</dict>
 		<dict/>
 	</array>
 </dict>

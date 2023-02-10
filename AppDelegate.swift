@@ -23,7 +23,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func setupCalendarEventsModel() {
-        // TODO retrieve events
+        calendarEventsModel.connectAndRetrieve()
         // TODO start thread
     }
     

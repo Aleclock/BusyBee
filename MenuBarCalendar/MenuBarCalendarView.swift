@@ -11,22 +11,12 @@ struct MenuBarCalendarView : View {
             
             VStack(alignment: .trailing, spacing: -2) {
                 Text(viewModel.name)
-                //Text("miao")
-                //.font(.system(size: 14))
             }
             //.font(.caption)
         }
-        /*
-        .onChange(of: viewModel.selectedCoinType) { _ in
-            viewModel.updateView()
-        }
-         */
-        /*
         .onAppear {
-            viewModel.subscribeToService()
+            viewModel.subscribeToCalendar()
         }
-         */
-        
     }
 }
 

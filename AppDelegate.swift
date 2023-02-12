@@ -24,7 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func setupCalendarEventsModel() {
         calendarEventsModel.connectAndRetrieve()
-        // TODO start thread
+        calendarEventsModel.scheduleUpdate()
     }
     
 }
@@ -32,13 +32,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 // MARK: - MENU BAR
 
 extension AppDelegate {
+
     
+    // https://stackoverflow.com/questions/64949572/how-to-create-status-bar-icon-and-menu-in-macos-using-swiftui
     func setupMenuBar() {
-        menuBarCalendarViewModel = MenuBarCalendarViewModel()
-        statusItem = NSStatusBar.system.statusItem(withLength: 64)
+        menuBarCalendarViewModel = MenuBarCalendarViewModel(calendarEventsModel: calendarEventsModel)
+        statusItem = NSStatusBar.system.statusItem(withLength: 200) // TODO farla flessibile
+        //statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        
         guard let contentView = self.contentView,
               let menuButton = statusItem.button
         else { return }
+        
         
         let hostingView = NSHostingView(rootView: MenuBarCalendarView(viewModel: menuBarCalendarViewModel))
         hostingView.translatesAutoresizingMaskIntoConstraints = false
@@ -51,7 +56,7 @@ extension AppDelegate {
             hostingView.leftAnchor.constraint(equalTo: contentView.leftAnchor)
         ])
     
-        menuButton.action = #selector(menuButtonClicked)
+        //menuButton.action = #selector(menuButtonClicked)
     }
     
     @objc func menuButtonClicked() {

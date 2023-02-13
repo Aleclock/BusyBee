@@ -6,13 +6,13 @@ struct MenuBarCalendarView : View {
     
     var body: some View {
         HStack(spacing: 4) {
+            // TODO resize image size
             Image(systemName: "circle.fill")
                 .foregroundColor(viewModel.color)
             
-            VStack(alignment: .trailing, spacing: -2) {
-                Text(viewModel.name)
-            }
-            //.font(.caption)
+            Text(viewModel.name)
+                .frame(alignment: .leading)
+                .lineLimit(1)          //.font(.caption)
         }
         .onAppear {
             viewModel.subscribeToCalendar()
@@ -23,7 +23,7 @@ struct MenuBarCalendarView : View {
 struct MenuBarCalendarView_Previews: PreviewProvider {
     static var previews: some View {
         MenuBarCalendarView(viewModel: .init(
-            name: "Bitcoin",
+            name: "",
             color: .green)
         )
     }

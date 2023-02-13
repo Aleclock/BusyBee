@@ -3,6 +3,7 @@ import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     
+    var statusBarItem: StatusBarItemController!
     var menuBarCalendarViewModel : MenuBarCalendarViewModel!
     var popoverCalendarViewModel : PopoverCalendarViewModel!
     var calendarEventsModel = CalendarEventsModel()
@@ -10,6 +11,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     var statusItem: NSStatusItem!
     let popover = NSPopover()
+    weak var preferencesWindow: NSWindow!
     
     private lazy var contentView: NSView? = {
         let view = (statusItem.value(forKey: "window") as? NSWindow)?.contentView
@@ -18,8 +20,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupCalendarEventsModel()
-        setupMenuBar()
-        setupPopover()
+        statusBarItem = StatusBarItemController(calendarEventsModel: calendarEventsModel)
+        statusBarItem.setAppDelegate(appdelegate: self)
     }
     
     func setupCalendarEventsModel() {
@@ -27,76 +29,47 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         calendarEventsModel.scheduleUpdate()
     }
     
+    @objc
+    func quit(_: NSStatusBarButton) {
+        NSLog("User click Quit")
+        NSApplication.shared.terminate(self)
+    }
 }
 
-// MARK: - MENU BAR
+// MARK - WINDOW
 
 extension AppDelegate {
+    @objc
+    func openPrefecencesWindow(_: NSStatusBarButton?) {
+        NSLog("Open preferences window")
+        let contentView = PreferencesView()
 
-    
-    // https://stackoverflow.com/questions/64949572/how-to-create-status-bar-icon-and-menu-in-macos-using-swiftui
-    func setupMenuBar() {
-        menuBarCalendarViewModel = MenuBarCalendarViewModel(calendarEventsModel: calendarEventsModel)
-        statusItem = NSStatusBar.system.statusItem(withLength: 200) // TODO farla flessibile
-        //statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        
-        guard let contentView = self.contentView,
-              let menuButton = statusItem.button
-        else { return }
-        
-        
-        let hostingView = NSHostingView(rootView: MenuBarCalendarView(viewModel: menuBarCalendarViewModel))
-        hostingView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(hostingView)
-        
-        NSLayoutConstraint.activate([
-            hostingView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            hostingView.rightAnchor.constraint(equalTo: contentView.rightAnchor),
-            hostingView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            hostingView.leftAnchor.constraint(equalTo: contentView.leftAnchor)
-        ])
-    
-        //menuButton.action = #selector(menuButtonClicked)
-    }
-    
-    @objc func menuButtonClicked() {
-        if popover.isShown {
-            popover.performClose(nil)
+        if let preferencesWindow {
+            // if a window is already open, focus on it instead of opening another one.
+            NSApplication.shared.activate(ignoringOtherApps: true)
+            preferencesWindow.makeKeyAndOrderFront(nil)
             return
+        } else {
+            let window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 700, height: 610),
+                styleMask: [.closable, .titled, .resizable],
+                backing: .buffered,
+                defer: false
+            )
+
+            window.title = "Preferences"
+            window.contentView = NSHostingView(rootView: contentView)
+            window.makeKeyAndOrderFront(nil)
+            // allow the preference window can be focused automatically when opened
+            NSApplication.shared.activate(ignoringOtherApps: true)
+
+            let controller = NSWindowController(window: window)
+            controller.showWindow(self)
+
+            window.center()
+            window.orderFrontRegardless()
+
+            preferencesWindow = window
         }
-        
-        guard let menuButton = statusItem.button else { return }
-        let positioningView = NSView(frame: menuButton.bounds)
-        positioningView.identifier = NSUserInterfaceItemIdentifier("positioningView")
-        menuButton.addSubview(positioningView)
-        
-        popover.show(relativeTo: menuButton.bounds, of: menuButton, preferredEdge: .maxY)
-        menuButton.bounds = menuButton.bounds.offsetBy(dx: 0, dy: menuButton.bounds.height)
-        popover.contentViewController?.view.window?.makeKey()
-    }
-    
-}
-
-// MARK: - POPOVER
-
-extension AppDelegate: NSPopoverDelegate {
-
-    func setupPopover() {
-        popoverCalendarViewModel = .init()
-        popover.behavior = .transient
-        popover.animates = true
-        popover.contentSize = .init(width: 240, height: 280)
-        popover.contentViewController = NSViewController()
-        popover.contentViewController?.view = NSHostingView(
-            rootView: PopoverCalendarView(viewModel: popoverCalendarViewModel).frame(maxWidth: .infinity, maxHeight: .infinity).padding()
-        )
-        popover.delegate = self
-    }
-    
-    func popoverDidClose(_ notification: Notification) {
-        let positioningView = statusItem.button?.subviews.first {
-            $0.identifier == NSUserInterfaceItemIdentifier("positioningView")
-        }
-        positioningView?.removeFromSuperview()
     }
 }

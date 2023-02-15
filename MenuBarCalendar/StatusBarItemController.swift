@@ -59,7 +59,6 @@ class StatusBarItemController {
     }
     
     func openMenu() {
-        print (events.count)
         statusItem.menu = statusItemMenu
         statusItem.button?.performClick(nil) // ...and click
         statusItem.menu = nil
@@ -92,12 +91,22 @@ class StatusBarItemController {
         titleItem.isEnabled = false
     }
     
+    func tintedImage(_ image: NSImage, tint: NSColor) -> NSImage {
+        guard let tinted = image.copy() as? NSImage else { return image }
+        tinted.lockFocus()
+        tint.set()
+
+        let imageRect = NSRect(origin: NSZeroPoint, size: image.size)
+        //NSRectFillUsingOperation(imageRect, .sourceAtop)
+        imageRect.fill(using: .sourceAtop)
+
+        tinted.unlockFocus()
+        return tinted
+    }
+    
     func updateMenu() {
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
-        
-        let today = Date()
-        let days = 3 // TODO save in default (appstorage)
         
         if (upcomingEvent != nil) {
             createSectionTitle(title: "Upcoming")
@@ -105,50 +114,46 @@ class StatusBarItemController {
             // TODO Ending in 33m
         }
         
-        for i in 0...days-1 {
-            let day = Calendar.current.date(byAdding: .day, value: i, to: today)!
-            
+        // TODO valutare di inviare al controller direttamente gli eventi divisi
+        let splittedEvents = calendarEventsModel.splitEventsByDays()
+        
+        for day in splittedEvents {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "E MMM d"
             
-            if (i == 0) {
+            if (calendarEventsModel.isSameDay(date1: Date(), date2: day.0)) {
                 createSectionTitle(title: "Today")
             } else {
-                createSectionTitle(title: dateFormatter.string(from: day))
+                // TODO valutare "Tomorrow"
+                createSectionTitle(title: dateFormatter.string(from: day.0))
             }
-            // TODO filter events by days
-            // TODO create section of events
+                
+            for event in day.1 {
+                let item = statusItemMenu.addItem(
+                    withTitle: calendarEventsModel.getTimeString(date: event.startDate) + " • " + event.title,
+                    action: nil,
+                    keyEquivalent: ""
+                )
+                
+                let color = NSColor(
+                    red: event.calendar.color.redComponent,
+                    green: event.calendar.color.greenComponent,
+                    blue: event.calendar.color.blueComponent,
+                    alpha: 0.8
+                    )
+                item.image = NSImage(systemSymbolName: "circlebadge.fill", accessibilityDescription: nil)?
+                    .tint(color: color)
+                
+                item.isEnabled = true
+                item.submenu = NSMenu(title: "Event detail")
+                
+                let dismissMeetingItem = item.submenu!.addItem(
+                    withTitle: "Miao",
+                    action: nil, //#selector(dismissNextMeetingAction),
+                    keyEquivalent: ""
+                    )
+            }
         }
-        
-        let text = "status_bar_empty_calendar_message"
-        let item = statusItemMenu.addItem(withTitle: "", action: nil, keyEquivalent: "")
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineBreakMode = NSLineBreakMode.byWordWrapping
-        item.attributedTitle = NSAttributedString(string: text, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
-        item.isEnabled = true
-        
-        statusItemMenu.addItem(NSMenuItem.separator())
-        
-        let quickActionsItem = statusItemMenu.addItem(
-            withTitle: "status_bar_quick_actions",
-            action: nil,
-            keyEquivalent: ""
-        )
-        quickActionsItem.isEnabled = true
-        quickActionsItem.submenu = NSMenu(title: "status_bar_quick_actions")
-        let dismissMeetingItem = quickActionsItem.submenu!.addItem(
-            withTitle: "Miao",
-            action: nil, //#selector(dismissNextMeetingAction),
-            keyEquivalent: ""
-        )
-        dismissMeetingItem.target = self
-        
-        let undiDismissMeetingsItem = quickActionsItem.submenu!.addItem(
-            withTitle: "status_bar_menu_remove_all_dismissals",
-            action: nil, //#selector(undismissMeetingsActions),
-            keyEquivalent: ""
-        )
-        undiDismissMeetingsItem.target = self
         
         statusItemMenu.addItem(NSMenuItem.separator())
         
@@ -177,5 +182,16 @@ class StatusBarItemController {
     
     func setAppDelegate(appdelegate: AppDelegate) {
         self.appdelegate = appdelegate
+    }
+}
+
+extension NSImage {
+    func tint(color: NSColor) -> NSImage {
+        return NSImage(size: size, flipped: false) { (rect) -> Bool in
+            color.set()
+            rect.fill()
+            self.draw(in: rect, from: NSRect(origin: .zero, size: self.size), operation: .destinationIn, fraction: 1.0)
+            return true
+        }
     }
 }

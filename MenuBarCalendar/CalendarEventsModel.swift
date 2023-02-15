@@ -12,6 +12,7 @@ class CalendarEventsModel {
     let eventsCalendarSubject = CurrentValueSubject<[String : EKEvent], Never>([:])
     var eventsCalendar: [String: EKEvent] { eventsCalendarSubject.value }
     
+    // TODO we use this
     let eventsCalendarOneSubject = CurrentValueSubject<[EKEvent], Never>([])
     var eventsCalendarOne : [EKEvent] { eventsCalendarOneSubject.value }
     var firstEventCalendar : EKEvent? { eventsCalendarOneSubject.value.first ?? nil}
@@ -98,5 +99,54 @@ class CalendarEventsModel {
             self.fetchEvents()
             self.scheduleUpdate()
         }
+    }
+    
+    func splitEventsByDays() -> [(Date, [EKEvent])]{
+        var splittedEvents : [(Date, [EKEvent])] = []
+        
+        if (eventsCalendarOne.count == 0) {
+            return splittedEvents
+        }
+            
+        var currentDay = eventsCalendarOne[0].startDate ?? Date()
+        var daysEvents = [EKEvent]()
+        var daysEventsTuple = (Date(), daysEvents)
+        
+        for d in eventsCalendarOne {
+            if (isSameDay(date1: d.startDate, date2: currentDay)) {
+                daysEvents.append(d)
+            } else {
+                daysEventsTuple.0 = currentDay
+                daysEventsTuple.1 = daysEvents
+                splittedEvents.append(daysEventsTuple)
+                
+                currentDay = d.startDate
+                daysEvents.removeAll()
+                daysEvents.append(d)
+            }
+        }
+        
+        daysEventsTuple.0 = currentDay
+        daysEventsTuple.1 = daysEvents
+        splittedEvents.append(daysEventsTuple)
+        
+        return splittedEvents
+    }
+    
+    public func isSameDay(date1 : Date, date2 : Date) -> Bool {
+        let fromDate = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: date1))
+        let toDate = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month, .day], from: date2))
+        let diff = Calendar.current.dateComponents([.day], from: fromDate!, to: toDate!)
+        if diff.day == 0 {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    public func getTimeString(date : Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm"
+        return dateFormatter.string(from: date)
     }
 }

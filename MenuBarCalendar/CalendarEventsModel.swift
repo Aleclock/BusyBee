@@ -6,16 +6,16 @@ import SwiftUI
 class CalendarEventsModel {
     
     private var grantedAccess : Bool = false
+    var calendars = [EKCalendar]()
     private var waitingSeconds : Int = 1
     let eventStore = EKEventStore()
     
-    let eventsCalendarSubject = CurrentValueSubject<[String : EKEvent], Never>([:])
-    var eventsCalendar: [String: EKEvent] { eventsCalendarSubject.value }
+    var eventsByDays = [(Date, [EKEvent])]() // TODO valutare il senso
     
-    // TODO we use this
-    let eventsCalendarOneSubject = CurrentValueSubject<[EKEvent], Never>([])
-    var eventsCalendarOne : [EKEvent] { eventsCalendarOneSubject.value }
-    var firstEventCalendar : EKEvent? { eventsCalendarOneSubject.value.first ?? nil}
+    // TODO reformat
+    let eventsCalendarSubject = CurrentValueSubject<[EKEvent], Never>([])
+    var eventsCalendarOne : [EKEvent] { eventsCalendarSubject.value }
+    var firstEventCalendar : EKEvent? { eventsCalendarSubject.value.first ?? nil}
     
     @State var TempTextArray: [String] = []
     @AppStorage("textArray", store: UserDefaults.standard) var items: Data = Data()
@@ -32,8 +32,7 @@ class CalendarEventsModel {
                 DispatchQueue.main.async {
                     self.eventStore.sources.forEach { source in
                         source.calendars(for: EKEntityType.event).forEach { (value) in
-                            //print (value.title)
-                            //print (value.color)
+                            self.calendars.append(value)
                         }
                     }
                     self.fetchEvents()
@@ -63,13 +62,13 @@ class CalendarEventsModel {
         let predicate = self.eventStore.predicateForEvents(withStart: Date(), end: weekFromNow, calendars: nil)
         let events = self.eventStore.events(matching: predicate)
         
-        var newDictionary = [String: EKEvent]()
+        //var newDictionary = [String: EKEvent]()
         var newDictionaryOne = [EKEvent]()
         events.forEach { (value) in
-            newDictionary["miao"] = value
+            //newDictionary["miao"] = value
             newDictionaryOne.append(value)
         }
-        eventsCalendarOneSubject.send(newDictionaryOne)
+        eventsCalendarSubject.send(newDictionaryOne)
     }
     
     func scheduleUpdate() {

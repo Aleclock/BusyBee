@@ -11,6 +11,8 @@
 		4E2CEEE4299AF7E000D3C001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2CEEE3299AF7E000D3C001 /* PreferencesView.swift */; };
 		4E3E4145299987E000AC5BFA /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3E4144299987E000AC5BFA /* Storage.swift */; };
 		4E5004672995B8A900B916F3 /* CalendarEventsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5004662995B8A900B916F3 /* CalendarEventsModel.swift */; };
+		4E83165F29A13CE600E14CD5 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 4E83165E29A13CE600E14CD5 /* Defaults */; };
+		4E83166129A13DE600E14CD5 /* DefaultsKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E83166029A13DE600E14CD5 /* DefaultsKeys.swift */; };
 		4ED1DEC32995303100098B04 /* MenuBarCalendarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ED1DEC22995303100098B04 /* MenuBarCalendarApp.swift */; };
 		4ED1DEC72995303400098B04 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4ED1DEC62995303400098B04 /* Assets.xcassets */; };
 		4ED1DECB2995303400098B04 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4ED1DECA2995303400098B04 /* Preview Assets.xcassets */; };
@@ -22,6 +24,7 @@
 		4E2CEEE3299AF7E000D3C001 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		4E3E4144299987E000AC5BFA /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		4E5004662995B8A900B916F3 /* CalendarEventsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEventsModel.swift; sourceTree = "<group>"; };
+		4E83166029A13DE600E14CD5 /* DefaultsKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsKeys.swift; sourceTree = "<group>"; };
 		4ED1DEBF2995303100098B04 /* MenuBarCalendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ED1DEC22995303100098B04 /* MenuBarCalendarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarCalendarApp.swift; sourceTree = "<group>"; };
 		4ED1DEC62995303400098B04 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -35,6 +38,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E83165F29A13CE600E14CD5 /* Defaults in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,6 +73,7 @@
 				4E3E4144299987E000AC5BFA /* Storage.swift */,
 				4E2CEEE1299AEA5000D3C001 /* StatusBarItemController.swift */,
 				4E2CEEE3299AF7E000D3C001 /* PreferencesView.swift */,
+				4E83166029A13DE600E14CD5 /* DefaultsKeys.swift */,
 			);
 			path = MenuBarCalendar;
 			sourceTree = "<group>";
@@ -97,6 +102,9 @@
 			dependencies = (
 			);
 			name = MenuBarCalendar;
+			packageProductDependencies = (
+				4E83165E29A13CE600E14CD5 /* Defaults */,
+			);
 			productName = MenuBarCalendar;
 			productReference = 4ED1DEBF2995303100098B04 /* MenuBarCalendar.app */;
 			productType = "com.apple.product-type.application";
@@ -125,6 +133,9 @@
 				Base,
 			);
 			mainGroup = 4ED1DEB62995303000098B04;
+			packageReferences = (
+				4E83165D29A13CE600E14CD5 /* XCRemoteSwiftPackageReference "Defaults" */,
+			);
 			productRefGroup = 4ED1DEC02995303100098B04 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -155,6 +166,7 @@
 				4E5004672995B8A900B916F3 /* CalendarEventsModel.swift in Sources */,
 				4ED1DEC32995303100098B04 /* MenuBarCalendarApp.swift in Sources */,
 				4E2CEEE2299AEA5000D3C001 /* StatusBarItemController.swift in Sources */,
+				4E83166129A13DE600E14CD5 /* DefaultsKeys.swift in Sources */,
 				4E3E4145299987E000AC5BFA /* Storage.swift in Sources */,
 				4E2CEEE4299AF7E000D3C001 /* PreferencesView.swift in Sources */,
 			);
@@ -380,6 +392,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4E83165D29A13CE600E14CD5 /* XCRemoteSwiftPackageReference "Defaults" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/Defaults";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4E83165E29A13CE600E14CD5 /* Defaults */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4E83165D29A13CE600E14CD5 /* XCRemoteSwiftPackageReference "Defaults" */;
+			productName = Defaults;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4ED1DEB72995303100098B04 /* Project object */;
 }

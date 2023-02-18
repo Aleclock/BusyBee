@@ -21,7 +21,7 @@ class StatusBarItemController {
     init(calendarEventsModel : CalendarEventsModel = .init()) {
         self.calendarEventsModel = calendarEventsModel
         createStatusBarButton()
-        self.calendarEventsModel.eventsCalendarOneSubject
+        self.calendarEventsModel.eventsCalendarSubject
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in self?.updateInfo() }
             .store(in: &subscriptions)
@@ -74,12 +74,12 @@ class StatusBarItemController {
         */
     }
     
-    func getUpdatedButtonValue(event : EKEvent?) -> String{
-        let eventTitle = calendarEventsModel.getTrimmerEventTitle(eventTitle: event!.title, maxLength: 25)
+    func getUpdatedButtonValue(event : EKEvent?) -> String {
         var title = ""
-        let isEventStarted = calendarEventsModel.isEventStarted(event: event)
-        
         if (event != nil) {
+            let eventTitle = calendarEventsModel.getTrimmerEventTitle(eventTitle: event!.title, maxLength: 25)
+            let isEventStarted = calendarEventsModel.isEventStarted(event: event)
+        
             title = isEventStarted.isStarted
             ? eventTitle + " • " + isEventStarted.time + " left"
             : eventTitle + " • in " + isEventStarted.time

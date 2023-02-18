@@ -27,19 +27,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc
-    func quit(_: NSStatusBarButton) {
-        NSLog("User click Quit")
-        NSApplication.shared.terminate(self)
-    }
-}
-
-// MARK - WINDOW
-
-extension AppDelegate {
-    @objc
     func openPrefecencesWindow(_: NSStatusBarButton?) {
         NSLog("Open preferences window")
-        let contentView = PreferencesView()
+        let contentView = PreferencesView(calendarModel: calendarEventsModel)
 
         if let preferencesWindow {
             // if a window is already open, focus on it instead of opening another one.
@@ -68,5 +58,11 @@ extension AppDelegate {
 
             preferencesWindow = window
         }
+    }
+    
+    @objc
+    func quit(_: NSStatusBarButton) {
+        //NSLog("User click Quit")
+        NSApplication.shared.terminate(self)
     }
 }

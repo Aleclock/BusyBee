@@ -39,9 +39,7 @@ class StatusBarItemController {
         statusItem.menu = statusItemMenu
         statusItem.button?.performClick(nil) // ...and click
         statusItem.menu = nil
-        //statusItem.button?.image = NSImage(systemSymbolName: "pencil", accessibilityDescription: nil)
-        //statusItem.button?.imagePosition = .imageLeft
-        statusItem.button?.title = "miao"
+        statusItem.button?.title = ""
     }
     
     @objc
@@ -68,7 +66,7 @@ class StatusBarItemController {
         upcomingEvent = calendarEventsModel.firstEventCalendar
         events = calendarEventsModel.eventsCalendarOne
         
-        updateButton(event: upcomingEvent)
+        statusItem.button?.title = getUpdatedButtonValue(event: upcomingEvent)
         /* TODO
         if (!isMenuOpen) {
             updateMenu()
@@ -76,8 +74,19 @@ class StatusBarItemController {
         */
     }
     
-    func updateButton(event : EKEvent?) {
-        statusItem.button?.title = getMenuBarMessage(event: event)
+    func getUpdatedButtonValue(event : EKEvent?) -> String{
+        let eventTitle = calendarEventsModel.getTrimmerEventTitle(eventTitle: event!.title, maxLength: 25)
+        var title = ""
+        let isEventStarted = calendarEventsModel.isEventStarted(event: event)
+        
+        if (event != nil) {
+            title = isEventStarted.isStarted
+            ? eventTitle + " • " + isEventStarted.time + " left"
+            : eventTitle + " • in " + isEventStarted.time
+        } else {
+            title = calendarEventsModel.getFormattedDate(date: Date())
+        }
+        return title
     }
     
     func createSectionTitle(title : String) {
@@ -91,27 +100,19 @@ class StatusBarItemController {
         titleItem.isEnabled = false
     }
     
-    func tintedImage(_ image: NSImage, tint: NSColor) -> NSImage {
-        guard let tinted = image.copy() as? NSImage else { return image }
-        tinted.lockFocus()
-        tint.set()
-
-        let imageRect = NSRect(origin: NSZeroPoint, size: image.size)
-        //NSRectFillUsingOperation(imageRect, .sourceAtop)
-        imageRect.fill(using: .sourceAtop)
-
-        tinted.unlockFocus()
-        return tinted
-    }
-    
     func updateMenu() {
         statusItemMenu.autoenablesItems = false
         statusItemMenu.removeAllItems()
         
         if (upcomingEvent != nil) {
-            createSectionTitle(title: "Upcoming")
-            // TODO Upcoming in 10h "
-            // TODO Ending in 33m
+            let isEventStarted = calendarEventsModel.isEventStarted(event: upcomingEvent)
+            let title = isEventStarted.isStarted
+                ? "Ending in " + isEventStarted.time
+                : "Upcoming in " + isEventStarted.time
+            createSectionTitle(title: title)
+            createMenuItem(menu: statusItemMenu, event: upcomingEvent!)
+        } else {
+            createSectionTitle(title: "No scheduled events")
         }
         
         // TODO valutare di inviare al controller direttamente gli eventi divisi
@@ -130,10 +131,13 @@ class StatusBarItemController {
                 
             for event in day.1 {
                 let item = statusItemMenu.addItem(
-                    withTitle: calendarEventsModel.getTimeString(date: event.startDate) + " • " + event.title,
+                    withTitle:
+                        calendarEventsModel.getTimeString(date: event.startDate) + " • " +
+                        calendarEventsModel.getTrimmerEventTitle(eventTitle: event.title, maxLength: 45),
                     action: nil,
                     keyEquivalent: ""
                 )
+                item.isEnabled = true
                 
                 let color = NSColor(
                     red: event.calendar.color.redComponent,
@@ -144,14 +148,8 @@ class StatusBarItemController {
                 item.image = NSImage(systemSymbolName: "circlebadge.fill", accessibilityDescription: nil)?
                     .tint(color: color)
                 
-                item.isEnabled = true
-                item.submenu = NSMenu(title: "Event detail")
-                
-                let dismissMeetingItem = item.submenu!.addItem(
-                    withTitle: "Miao",
-                    action: nil, //#selector(dismissNextMeetingAction),
-                    keyEquivalent: ""
-                    )
+                item.submenu = NSMenu(title: "event_detail")
+                createSubMenu(submenu: item.submenu!, event: event)
             }
         }
         
@@ -161,27 +159,119 @@ class StatusBarItemController {
         statusItemMenu.addItem(withTitle: "Quit", action: #selector(AppDelegate.quit), keyEquivalent: "q")
     }
     
-    private func getMenuBarMessage (event : EKEvent?) -> String {
-        var title = ""
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.hour, .minute]
-        formatter.unitsStyle = .abbreviated
-        if (event != nil) {
-            if (event!.startDate < Date()) {
-                let time = formatter.string(from: Date().distance(to: event!.endDate))!
-                title = event!.title + " • " + time + " left"
-            } else {
-                let time = formatter.string(from: Date().distance(to: event!.startDate))
-                title = event!.title + " • " + "in " + (time ?? "")
-            }
-        } else {
-            // TODO show Date
+    func createMenuItem(menu : NSMenu, event: EKEvent) {
+        let item = menu.addItem(
+            withTitle:
+                calendarEventsModel.getTimeString(date: event.startDate) + " • " +
+                calendarEventsModel.getTrimmerEventTitle(eventTitle: event.title, maxLength: 45),
+            action: nil,
+            keyEquivalent: ""
+        )
+    
+        item.isEnabled = true
+        
+        let color = NSColor(
+            red: event.calendar.color.redComponent,
+            green: event.calendar.color.greenComponent,
+            blue: event.calendar.color.blueComponent,
+            alpha: 0.8
+            )
+        item.image = NSImage(systemSymbolName: "circlebadge.fill", accessibilityDescription: nil)?
+            .tint(color: color)
+        
+        item.submenu = NSMenu(title: "event_detail")
+    }
+    
+    @objc private func refreshSources() {
+        print ("miao")
+    }
+    
+    func createSubMenu(submenu: NSMenu, event: EKEvent) {
+        // TITLE
+        submenu.addItem(createSubMenuItem(title: splitTitle(title: event.title), isActive: true))
+        submenu.addItem(NSMenuItem.separator())
+        
+        if (event.location != nil) {
+            submenu.addItem(createSubMenuItem(title: "Location", isActive: false))
+            submenu.addItem(createSubMenuItem(title: event.location!, isActive: true))
+            submenu.addItem(NSMenuItem.separator())
         }
-        return title
+        
+        // DATE
+        submenu.addItem(createSubMenuItem(title: "Dates", isActive: false))
+        if (calendarEventsModel.isSameDay(date1: event.startDate, date2: event.endDate)) {
+            submenu.addItem(createSubMenuItem(title: calendarEventsModel.getFormattedDate(date: event.startDate) + "\t\t" +
+                            calendarEventsModel.getTimeString(date: event.startDate) + " - " +
+                            calendarEventsModel.getTimeString(date: event.endDate), isActive: true))
+        } else {
+            submenu.addItem(
+                createSubMenuItem (title:
+                    calendarEventsModel.getFormattedDate(date: event.startDate) + "\t\t" +
+                    calendarEventsModel.getTimeString(date: event.startDate) + "\n" +
+                    calendarEventsModel.getFormattedDate(date: event.endDate) + "\t\t" +
+                    calendarEventsModel.getTimeString(date: event.endDate), isActive: true
+                )
+            )
+        }
+        
+        submenu.addItem(NSMenuItem.separator())
+        
+        if (event.attendees != nil) {
+            submenu.addItem(createSubMenuItem(title: "Attendees", isActive: false))
+            for attendee in event.attendees! {
+                if (attendee.name != event.organizer?.name) {
+                    submenu.addItem(createSubMenuItem(title: attendee.name!, isActive: true))
+                }
+                //print (attendee.participantType.rawValue)
+            }
+            submenu.addItem(NSMenuItem.separator())
+        }
+        
+        // NOTES
+        if (event.notes != nil && event.notes != "") {
+            submenu.addItem(createSubMenuItem(title: "Notes", isActive: false))
+            submenu.addItem(createSubMenuItem(title: event.notes!, isActive: true))
+            submenu.addItem(NSMenuItem.separator())
+        }
+    }
+    
+    func createSubMenuItem(title: String, isActive: Bool) -> NSMenuItem {
+        let submenu = NSMenuItem()
+        submenu.attributedTitle = NSAttributedString(string: title, attributes: nil)
+        if (isActive) {
+            submenu.action = #selector(refreshSources)
+            submenu.target = self
+            submenu.keyEquivalent = ""
+        }
+        //submenu.image = NSImage(systemSymbolName: "circlebadge.fill", accessibilityDescription: nil)
+        return submenu
     }
     
     func setAppDelegate(appdelegate: AppDelegate) {
         self.appdelegate = appdelegate
+    }
+    
+    private lazy var contentView: NSView? = {
+        let view = (statusItem.value(forKey: "window") as? NSWindow)?.contentView
+        return view
+    }()
+    
+    private func splitTitle(title : String) -> String {
+        let words = title.components(separatedBy: " ")
+        let maxCharPerLine = 30
+        var charCounter = 0
+        var title = ""
+        
+        for w in words {
+            if (charCounter + w.count > maxCharPerLine) {
+                title += "\n"
+                charCounter = w.count
+            } else {
+                title += " " + w
+                charCounter += w.count
+            }
+        }
+        return title
     }
 }
 
@@ -195,3 +285,55 @@ extension NSImage {
         }
     }
 }
+
+
+/*
+func createCustomSubMenu(event : EKEvent) -> NSMenuItem {
+    let color = Color(
+        red: event.calendar.color.redComponent,
+        green: event.calendar.color.greenComponent,
+        blue: event.calendar.color.blueComponent,
+        opacity: 0.8
+        )
+    
+    let contentViewSwiftUI =
+        ScrollView {
+            VStack(alignment: .leading) {
+                HStack {
+                    Text(event.title).font(.title3).padding(.horizontal, 10)
+                    Spacer()
+                    Image(systemName: "circlebadge.fill").foregroundColor(color).padding(.horizontal, 10)
+                }
+                Spacer()
+                Text(event.location ?? "").padding(.horizontal, 10)
+                Divider()
+                if (calendarEventsModel.isSameDay(date1: event.startDate, date2: event.endDate)) {
+                    Text(calendarEventsModel.getFormattedDate(date: event.startDate) + "\t" +
+                         calendarEventsModel.getTimeString(date: event.startDate) + " - " +
+                         calendarEventsModel.getTimeString(date: event.endDate)
+                    ).padding(.horizontal, 10)
+                } else {
+                    Text(
+                        calendarEventsModel.getFormattedDate(date: event.startDate) + "\t" +
+                        calendarEventsModel.getTimeString(date: event.startDate)).padding(.horizontal, 10)
+                    Text(calendarEventsModel.getTimeString(date: event.endDate)).padding(.horizontal, 10)
+                }
+                
+                // TODO partecipanti
+                
+                if (event.notes != nil) {
+                    Divider()
+                    Text(event.notes ?? "").padding(.horizontal, 10)
+                }
+            }.padding(.vertical, 5)
+        }
+    
+    let contentView = NSHostingView(rootView: contentViewSwiftUI)
+    contentView.frame = NSRect(x: 0, y: 0, width: 300, height: 10)
+    //contentView.frame = NSRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: 300, height: 200))
+    
+    let menuItem = NSMenuItem()
+    menuItem.view = contentView
+    return menuItem
+}
+ */

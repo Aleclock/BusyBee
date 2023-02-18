@@ -4,10 +4,7 @@ import SwiftUI
 class AppDelegate: NSObject, NSApplicationDelegate {
     
     var statusBarItem: StatusBarItemController!
-    var menuBarCalendarViewModel : MenuBarCalendarViewModel!
-    var popoverCalendarViewModel : PopoverCalendarViewModel!
     var calendarEventsModel = CalendarEventsModel()
-    
     
     var statusItem: NSStatusItem!
     let popover = NSPopover()

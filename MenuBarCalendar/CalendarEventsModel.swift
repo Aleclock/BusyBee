@@ -20,13 +20,10 @@ class CalendarEventsModel {
     @State var TempTextArray: [String] = []
     @AppStorage("textArray", store: UserDefaults.standard) var items: Data = Data()
     
-    
-    
     // Connect to calendars, request access (if necessary) and retrieve events
     func connectAndRetrieve() {
         requestAccess()
     }
-    
     
     private func requestAccess() {
         self.eventStore.requestAccess(to: .event) { (granted, error) in
@@ -34,12 +31,10 @@ class CalendarEventsModel {
                 self.grantedAccess = true
                 DispatchQueue.main.async {
                     self.eventStore.sources.forEach { source in
-                        //print (source.title)
                         source.calendars(for: EKEntityType.event).forEach { (value) in
                             //print (value.title)
                             //print (value.color)
                         }
-                        //print ("---")
                     }
                     self.fetchEvents()
                 }
@@ -74,23 +69,7 @@ class CalendarEventsModel {
             newDictionary["miao"] = value
             newDictionaryOne.append(value)
         }
-            /*
-            if (ev.title != nil) {
-                print (ev.title!)
-            }
-            print (ev.availability.rawValue)
-            print (ev.isAllDay)
-            print (ev.startDate ?? "NaN")
-            print (ev.endDate ?? "NaN")
-            //print (ev.status.hashValue)
-            print (ev.status.rawValue) // 0: none, 1: confirmed, 2: tentative, 3: canceled
-            print ("---")
-             */
-        //print (newDictionary.count)
-        //let mergedDictionary = eventsCalendar.merging(newDictionary){ $1 }
-        //let mergedDictionary = eventsCalendarOne.mer
         eventsCalendarOneSubject.send(newDictionaryOne)
-        //eventsCalendarSubject.send(newDictionary)
     }
     
     func scheduleUpdate() {
@@ -101,6 +80,7 @@ class CalendarEventsModel {
         }
     }
     
+    // TODO modificare 0 e 1
     func splitEventsByDays() -> [(Date, [EKEvent])]{
         var splittedEvents : [(Date, [EKEvent])] = []
         
@@ -110,14 +90,14 @@ class CalendarEventsModel {
             
         var currentDay = eventsCalendarOne[0].startDate ?? Date()
         var daysEvents = [EKEvent]()
-        var daysEventsTuple = (Date(), daysEvents)
+        var daysEventsTuple = (day: Date(), events: daysEvents)
         
         for d in eventsCalendarOne {
             if (isSameDay(date1: d.startDate, date2: currentDay)) {
                 daysEvents.append(d)
             } else {
-                daysEventsTuple.0 = currentDay
-                daysEventsTuple.1 = daysEvents
+                daysEventsTuple.day = currentDay
+                daysEventsTuple.events = daysEvents
                 splittedEvents.append(daysEventsTuple)
                 
                 currentDay = d.startDate
@@ -126,8 +106,8 @@ class CalendarEventsModel {
             }
         }
         
-        daysEventsTuple.0 = currentDay
-        daysEventsTuple.1 = daysEvents
+        daysEventsTuple.day = currentDay
+        daysEventsTuple.events = daysEvents
         splittedEvents.append(daysEventsTuple)
         
         return splittedEvents
@@ -144,9 +124,48 @@ class CalendarEventsModel {
         }
     }
     
+    /// Returns a Date in HH:mm format
     public func getTimeString(date : Date) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm"
         return dateFormatter.string(from: date)
     }
+    
+    /// Returns a Date in E d MMM yyyy format
+    public func getFormattedDate(date : Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "E d MMM yyyy"
+        return dateFormatter.string(from: date)
+    }
+    
+    public func getTrimmerEventTitle(eventTitle : String?, maxLength: Int) -> String {
+        var title = eventTitle ?? ""
+        if (title.count > maxLength) {
+            title = title.prefix(maxLength) + "..."
+        }
+        return title
+    }
+    
+    /// Determine if an event is already started or not. Return a bool and the from start/to end
+    public func isEventStarted(event: EKEvent?) -> (isStarted : Bool, time: String) {
+        var result = (isStarted: false, time: "")
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute]
+        formatter.unitsStyle = .abbreviated
+        
+        if (event == nil) {
+            return result
+        }
+        
+        if (event!.startDate < Date()) {
+            let time = formatter.string(from: Date().distance(to: event!.endDate))!
+            result = (true, time)
+        } else {
+            let time = formatter.string(from: Date().distance(to: event!.startDate))
+            result = (false, time ?? "")
+        }
+            
+        return result
+    }
+    
 }

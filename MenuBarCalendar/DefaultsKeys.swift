@@ -1,5 +1,5 @@
-import Defaults
 import Foundation
+import Defaults
 
 extension Defaults.Keys {
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)

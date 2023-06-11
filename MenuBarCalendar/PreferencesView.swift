@@ -15,7 +15,6 @@ struct PreferencesView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
-            //Text("Preferences").font(.title2).bold()
             Text("General").font(.headline).bold()
             Toggle("Start at startup", isOn: $launchAtLogin).toggleStyle(.switch)
             Divider().frame(width: 300)
@@ -125,24 +124,3 @@ extension View {
         modifier(ViewDidLoadModifier(perform: action))
     }
 }
-
-
-/*
-
-
-
-
-
-
-
-        Text("miao")
-        //ForEach(Array(self.calendarsBySource.keys), id: \.self) { source in
-        //   Section(header: Text(source)) {
-        //   }
-        /*
-         ForEach(0 ..< nCalendars) { calendar in
-         CalendarRow(isToggle: $toggles[calendar])
-         */
-    }
-}.frame(width: 300, height: 300)
- */

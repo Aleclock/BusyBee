@@ -1,13 +1,17 @@
 import Cocoa
+import Defaults
 import SwiftUI
+import ServiceManagement
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     
-    var menuBarCoinViewModel: MenuBarCoinViewModel!
-    var popoverCoinViewModel: PopoverCoinViewModel!
-    let coinCapService = CoinCapPriceService()
+    var statusBarItem: StatusBarItemController!
+    var calendarEventsModel = CalendarEventsModel()
+    
+    var launchAtLoginObserver : _DefaultsObservation?
+    
     var statusItem: NSStatusItem!
-    let popover = NSPopover()
+    weak var preferencesWindow: NSWindow!
     
     private lazy var contentView: NSView? = {
         let view = (statusItem.value(forKey: "window") as? NSWindow)?.contentView
@@ -15,83 +19,88 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }()
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        setupCoinCapService()
-        setupMenuBar()
-        setupPopover()
-    }
-    
-    func setupCoinCapService() {
-        coinCapService.connect()
-        coinCapService.startMonitorNetworkConnectivity()
-    }
-    
-}
-
-// MARK: - MENU BAR
-
-extension AppDelegate {
-    
-    func setupMenuBar() {
-        menuBarCoinViewModel = MenuBarCoinViewModel(service: coinCapService)
-        statusItem = NSStatusBar.system.statusItem(withLength: 64)
-        guard let contentView = self.contentView,
-              let menuButton = statusItem.button
-        else { return }
+        setupCalendarEventsModel()
+        statusBarItem = StatusBarItemController(calendarEventsModel: calendarEventsModel)
+        statusBarItem.setAppDelegate(appdelegate: self)
+        // When our main application starts, we have to kill
+        // the auto launcher application if it's still running.
         
-        let hostingView = NSHostingView(rootView: MenuBarCoinView(viewModel: menuBarCoinViewModel))
-        hostingView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(hostingView)
-        
-        NSLayoutConstraint.activate([
-            hostingView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            hostingView.rightAnchor.constraint(equalTo: contentView.rightAnchor),
-            hostingView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            hostingView.leftAnchor.constraint(equalTo: contentView.leftAnchor)
-        ])
-    
-        menuButton.action = #selector(menuButtonClicked)
+        //postNotificationForAutoLauncher()
     }
     
-    @objc func menuButtonClicked() {
-        if popover.isShown {
-            popover.performClose(nil)
+    func setupCalendarEventsModel() {
+        calendarEventsModel.connectAndRetrieve()
+        calendarEventsModel.scheduleUpdate()
+        //setupDefaultObserver()
+    }
+    
+    func setupDefaultObserver() {
+        launchAtLoginObserver = Defaults.observe(.launchAtLogin, options: []) { change in
+            if change.oldValue != change.newValue {
+                print (change.newValue)
+                //SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
+            }
+        }
+    }
+    
+    private func postNotificationForAutoLauncher() {
+        let runningApps = NSWorkspace.shared.runningApplications
+        let isLauncherRunning = runningApps.contains { $0.bundleIdentifier == AutoLauncher.bundleIdentifier }
+        if isLauncherRunning {
+            //DistributedNotificationCenter.default().post(name: .killLauncher, object: nil)
+        }
+        /*
+        let runningApps = NSWorkspace.shared.runningApplications
+        let isRunning = runningApps.contains { $0.bundleIdentifier == AutoLauncher.bundleIdentifier }
+        if isRunning {
+            let killAutoLauncherNotificationName = Notification.Name(rawValue: "killAutoLauncher")
+            DistributedNotificationCenter.default().post(name: killAutoLauncherNotificationName,
+                                                         object: Bundle.main.bundleIdentifier)
+        }
+        */
+    }
+    
+    @objc
+    func openPrefecencesWindow(_: NSStatusBarButton?) {
+        NSLog("Open preferences window")
+        let contentView = PreferencesView(calendarModel: calendarEventsModel)
+
+        if let preferencesWindow {
+            // if a window is already open, focus on it instead of opening another one.
+            NSApplication.shared.activate(ignoringOtherApps: true)
+            preferencesWindow.makeKeyAndOrderFront(nil)
             return
+        } else {
+            let window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 700, height: 610),
+                styleMask: [.closable, .titled, .resizable],
+                backing: .buffered,
+                defer: false
+            )
+
+            window.title = "Preferences"
+            window.contentView = NSHostingView(rootView: contentView)
+            window.makeKeyAndOrderFront(nil)
+            // allow the preference window can be focused automatically when opened
+            NSApplication.shared.activate(ignoringOtherApps: true)
+
+            let controller = NSWindowController(window: window)
+            controller.showWindow(self)
+
+            window.center()
+            window.orderFrontRegardless()
+
+            preferencesWindow = window
         }
-        
-        guard let menuButton = statusItem.button else { return }
-        let positioningView = NSView(frame: menuButton.bounds)
-        positioningView.identifier = NSUserInterfaceItemIdentifier("positioningView")
-        menuButton.addSubview(positioningView)
-        
-        popover.show(relativeTo: menuButton.bounds, of: menuButton, preferredEdge: .maxY)
-        menuButton.bounds = menuButton.bounds.offsetBy(dx: 0, dy: menuButton.bounds.height)
-        popover.contentViewController?.view.window?.makeKey()
-        
     }
     
+    @objc
+    func quit(_: NSStatusBarButton) {
+        NSLog("User click Quit")
+        NSApplication.shared.terminate(self)
+    }
 }
 
-// MARK: - POPOVER
-
-extension AppDelegate: NSPopoverDelegate {
-
-    func setupPopover() {
-        popoverCoinViewModel = .init(service: coinCapService)
-        popover.behavior = .transient
-        popover.animates = true
-        popover.contentSize = .init(width: 240, height: 280)
-        popover.contentViewController = NSViewController()
-        popover.contentViewController?.view = NSHostingView(
-            rootView: PopoverCoinView(viewModel: popoverCoinViewModel).frame(maxWidth: .infinity, maxHeight: .infinity).padding()
-        )
-        popover.delegate = self
-    }
-    
-    func popoverDidClose(_ notification: Notification) {
-        let positioningView = statusItem.button?.subviews.first {
-            $0.identifier == NSUserInterfaceItemIdentifier("positioningView")
-        }
-        positioningView?.removeFromSuperview()
-    }
-
+public enum AutoLauncher {
+    static let bundleIdentifier: String = "com.CAproj.AutoLauncher"
 }

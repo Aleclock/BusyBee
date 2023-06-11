@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E1DF4DC2A363AA40030285F /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 4E1DF4DB2A363AA40030285F /* LaunchAtLogin */; };
 		4E2CEEE2299AEA5000D3C001 /* StatusBarItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2CEEE1299AEA5000D3C001 /* StatusBarItemController.swift */; };
 		4E2CEEE4299AF7E000D3C001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2CEEE3299AF7E000D3C001 /* PreferencesView.swift */; };
 		4E3E4145299987E000AC5BFA /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3E4144299987E000AC5BFA /* Storage.swift */; };
@@ -38,6 +39,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E1DF4DC2A363AA40030285F /* LaunchAtLogin in Frameworks */,
 				4E83165F29A13CE600E14CD5 /* Defaults in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -96,6 +98,7 @@
 				4ED1DEBB2995303100098B04 /* Sources */,
 				4ED1DEBC2995303100098B04 /* Frameworks */,
 				4ED1DEBD2995303100098B04 /* Resources */,
+				4E1DF4DD2A363C180030285F /* Launch at Login Helper” */,
 			);
 			buildRules = (
 			);
@@ -104,6 +107,7 @@
 			name = MenuBarCalendar;
 			packageProductDependencies = (
 				4E83165E29A13CE600E14CD5 /* Defaults */,
+				4E1DF4DB2A363AA40030285F /* LaunchAtLogin */,
 			);
 			productName = MenuBarCalendar;
 			productReference = 4ED1DEBF2995303100098B04 /* MenuBarCalendar.app */;
@@ -135,6 +139,7 @@
 			mainGroup = 4ED1DEB62995303000098B04;
 			packageReferences = (
 				4E83165D29A13CE600E14CD5 /* XCRemoteSwiftPackageReference "Defaults" */,
+				4E1DF4DA2A363AA40030285F /* XCRemoteSwiftPackageReference "LaunchAtLogin" */,
 			);
 			productRefGroup = 4ED1DEC02995303100098B04 /* Products */;
 			projectDirPath = "";
@@ -156,6 +161,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4E1DF4DD2A363C180030285F /* Launch at Login Helper” */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Launch at Login Helper”";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILT_PRODUCTS_DIR}/LaunchAtLogin_LaunchAtLogin.bundle/Contents/Resources/copy-helper-swiftpm.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4ED1DEBB2995303100098B04 /* Sources */ = {
@@ -298,6 +325,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MenuBarCalendar/Info.plist;
+				INFOPLIST_KEY_LSBackgroundOnly = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Please allow Calendars";
 				INFOPLIST_KEY_NSContactsUsageDescription = "Please allow Contacts";
 				INFOPLIST_KEY_NSRemindersUsageDescription = "Please allow Reminders";
@@ -341,6 +369,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MenuBarCalendar/Info.plist;
+				INFOPLIST_KEY_LSBackgroundOnly = YES;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Please allow Calendars";
 				INFOPLIST_KEY_NSContactsUsageDescription = "Please allow Contacts";
 				INFOPLIST_KEY_NSRemindersUsageDescription = "Please allow Reminders";
@@ -394,6 +423,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		4E1DF4DA2A363AA40030285F /* XCRemoteSwiftPackageReference "LaunchAtLogin" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		4E83165D29A13CE600E14CD5 /* XCRemoteSwiftPackageReference "Defaults" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/Defaults";
@@ -405,6 +442,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4E1DF4DB2A363AA40030285F /* LaunchAtLogin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4E1DF4DA2A363AA40030285F /* XCRemoteSwiftPackageReference "LaunchAtLogin" */;
+			productName = LaunchAtLogin;
+		};
 		4E83165E29A13CE600E14CD5 /* Defaults */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 4E83165D29A13CE600E14CD5 /* XCRemoteSwiftPackageReference "Defaults" */;

@@ -1,4 +1,5 @@
 import Cocoa
+import LaunchAtLogin
 import Defaults
 import SwiftUI
 import ServiceManagement
@@ -37,7 +38,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func setupDefaultObserver() {
         launchAtLoginObserver = Defaults.observe(.launchAtLogin, options: []) { change in
             if change.oldValue != change.newValue {
-                print (change.newValue)
+                LaunchAtLogin.isEnabled = change.newValue
+                print(LaunchAtLogin.isEnabled)
                 //SMLoginItemSetEnabled(AutoLauncher.bundleIdentifier as CFString, change.newValue)
             }
         }

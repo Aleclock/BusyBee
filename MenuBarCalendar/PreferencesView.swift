@@ -5,8 +5,11 @@ import Defaults
 struct PreferencesView: View {
     @State var calendarsBySource: [String: [EKCalendar]] = [:]
     
+    @State private var text = ""
+    
     @Default(.launchAtLogin) var launchAtLogin
     @Default(.showEventsForPeriod) var showEventsForPeriod
+    @Default(.eventsRefreshTime) var eventsRefreshTime
     @Default(.showEventDetails) var showEventDetails
     
     @Default(.selectedCalendarIDs) var selectedCalendarIDs
@@ -17,6 +20,18 @@ struct PreferencesView: View {
         VStack(alignment: .leading, spacing: 15) {
             Text("General").font(.headline).bold()
             Toggle("Start at startup", isOn: $launchAtLogin).toggleStyle(.switch)
+            
+            HStack {
+                Picker("Refresh time", selection: $eventsRefreshTime) {
+                    Text("10 seconds").tag(EventsRefreshTime.seconds10)
+                    Text("30 seconds").tag(EventsRefreshTime.seconds30)
+                    Text("60 seconds").tag(EventsRefreshTime.seconds60)
+                    Text("10 seconds").tag(EventsRefreshTime.seconds120)
+                    Text("5 minutes").tag(EventsRefreshTime.seconds300)
+                    Text("10 minutes").tag(EventsRefreshTime.seconds600)
+                }.frame(width: 300)
+            }
+            
             Divider().frame(width: 300)
             
             Text("Appearance").font(.headline).bold()
@@ -28,6 +43,9 @@ struct PreferencesView: View {
                     Text("Full week").tag(ShowEventsForPeriod.full_week)
                 }.frame(width: 300)
             }
+            
+            // TODO mettere textfield
+            //TextField("Placeholder", value: $number) //, format: .number)
             
             Toggle("Show event detail", isOn: $showEventDetails).toggleStyle(.switch)
             Divider().frame(width: 300)

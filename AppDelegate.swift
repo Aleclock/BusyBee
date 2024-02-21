@@ -30,6 +30,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func setupCalendarEventsModel() {
+        calendarEventsModel.setupDefaultObserver()
         calendarEventsModel.connectAndRetrieve()
         calendarEventsModel.scheduleUpdate()
         setupDefaultObserver()

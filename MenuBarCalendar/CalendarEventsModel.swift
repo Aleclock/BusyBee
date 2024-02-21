@@ -2,6 +2,7 @@ import Foundation
 import EventKit
 import Combine
 import SwiftUI
+import Defaults
 
 class CalendarEventsModel {
     
@@ -12,6 +13,9 @@ class CalendarEventsModel {
     
     var eventsByDays = [(Date, [EKEvent])]() // TODO valutare il senso
     
+    var showEventsForPeriodObserver : _DefaultsObservation?
+    var selectedCalendarIDsObserver : _DefaultsObservation?
+    
     // TODO reformat
     let eventsCalendarSubject = CurrentValueSubject<[EKEvent], Never>([])
     var eventsCalendarOne : [EKEvent] { eventsCalendarSubject.value }
@@ -19,6 +23,20 @@ class CalendarEventsModel {
     
     @State var TempTextArray: [String] = []
     @AppStorage("textArray", store: UserDefaults.standard) var items: Data = Data()
+    
+    func setupDefaultObserver() {
+        showEventsForPeriodObserver = Defaults.observe(.showEventsForPeriod, options: []) { change in
+            if change.oldValue != change.newValue {
+                self.fetchEvents()
+            }
+        }
+        
+        selectedCalendarIDsObserver = Defaults.observe(.selectedCalendarIDs, options: []) { change in
+            if change.oldValue != change.newValue {
+                self.fetchEvents()
+            }
+        }
+    }
     
     // Connect to calendars, request access (if necessary) and retrieve events
     func connectAndRetrieve() {
@@ -54,8 +72,6 @@ class CalendarEventsModel {
     }
     
     func fetchEvents() {
-        //addAlbum()
-        
         let byDays = 2
         let weekFromNow = Date().advanced(by: TimeInterval(60*60*24*byDays))
         
@@ -72,7 +88,7 @@ class CalendarEventsModel {
     }
     
     func scheduleUpdate() {
-        let dispatchAfter = DispatchTimeInterval.seconds(waitingSeconds)
+        let dispatchAfter = DispatchTimeInterval.seconds(Default(.eventsRefreshTime).wrappedValue.rawValue)
         DispatchQueue.main.asyncAfter(deadline: .now() + dispatchAfter) {
             self.fetchEvents()
             self.scheduleUpdate()

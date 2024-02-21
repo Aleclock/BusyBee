@@ -4,6 +4,7 @@ import EventKit
 import SwiftUI
 import Combine
 import EventKit
+import Defaults
 
 class StatusBarItemController {
     private let calendarEventsModel : CalendarEventsModel
@@ -148,8 +149,10 @@ class StatusBarItemController {
                 item.image = NSImage(systemSymbolName: "circlebadge.fill", accessibilityDescription: nil)?
                     .tint(color: color)
                 
-                item.submenu = NSMenu(title: "event_detail")
-                createSubMenu(submenu: item.submenu!, event: event)
+                if (Defaults[.showEventDetails]) {
+                    item.submenu = NSMenu(title: "event_detail")
+                    createSubMenu(submenu: item.submenu!, event: event)
+                }
             }
         }
         

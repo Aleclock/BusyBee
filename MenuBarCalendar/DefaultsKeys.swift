@@ -9,11 +9,11 @@ extension Defaults.Keys {
     static let eventsRefreshTime = Key<EventsRefreshTime>("eventsRefreshTime", default: .seconds60)
 }
 
-enum ShowEventsForPeriod: String, _DefaultsSerializable {
-    case today
-    case today_n_tomorrow
-    case three_days
-    case full_week
+enum ShowEventsForPeriod: Int, _DefaultsSerializable {
+    case today = 1
+    case today_n_tomorrow = 2
+    case three_days = 3
+    case full_week = 7
 }
 
 enum EventsRefreshTime: Int, _DefaultsSerializable {

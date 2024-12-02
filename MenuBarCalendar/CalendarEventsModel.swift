@@ -72,16 +72,19 @@ class CalendarEventsModel {
     }
     
     func fetchEvents() {
-        let byDays = 2
-        let weekFromNow = Date().advanced(by: TimeInterval(60*60*24*byDays))
+        let byDays = Default(.showEventsForPeriod).wrappedValue.rawValue
+            
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date()) // Start of today
+        let endOfTargetDay = calendar.date(byAdding: .day, value: byDays, to: startOfToday)?.addingTimeInterval(-1) // End of nth day
         
-        let predicate = self.eventStore.predicateForEvents(withStart: Date(), end: weekFromNow, calendars: nil)
+        guard let endOfTargetDay = endOfTargetDay else { return }
+        
+        let predicate = self.eventStore.predicateForEvents(withStart: startOfToday, end: endOfTargetDay, calendars: nil)
         let events = self.eventStore.events(matching: predicate)
         
-        //var newDictionary = [String: EKEvent]()
         var newDictionaryOne = [EKEvent]()
         events.forEach { (value) in
-            //newDictionary["miao"] = value
             newDictionaryOne.append(value)
         }
         eventsCalendarSubject.send(newDictionaryOne)

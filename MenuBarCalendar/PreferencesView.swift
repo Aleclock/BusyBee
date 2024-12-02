@@ -66,13 +66,15 @@ struct PreferencesView: View {
                                         blue: calendar.color.blueComponent),
                                     //isSelected: self.selectedCalendarIDs.contains(calendar.calendarIdentifier),
                                     action: {
+                                        //self.selectedCalendarIDs.removeAll()
+                                        //Defaults[.selectedCalendarIDs] = self.selectedCalendarIDs
+                                        
                                         if self.selectedCalendarIDs.contains(calendar.calendarIdentifier) {
                                             self.selectedCalendarIDs.removeAll { $0 == calendar.calendarIdentifier }
                                         } else {
                                             self.selectedCalendarIDs.append(calendar.calendarIdentifier)
                                         }
-                                        print (self.selectedCalendarIDs)
-                                        print ("--")
+                                        Defaults[.selectedCalendarIDs] = self.selectedCalendarIDs // Ensure Defaults is updated
                                     }
                                 )
                             //}

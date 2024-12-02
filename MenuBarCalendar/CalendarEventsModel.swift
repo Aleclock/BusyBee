@@ -64,13 +64,6 @@ class CalendarEventsModel {
         return Storage.loadStringArray(data: data)
     }
     
-    // TODO convert to EKCalendar
-    func addAlbum() {
-        var tmpAlbums = getStrings(data: items)
-        tmpAlbums.append("Album # Miao")
-        items = Storage.archiveStringArray(object: tmpAlbums)
-    }
-    
     func fetchEvents() {
         let byDays = Default(.showEventsForPeriod).wrappedValue.rawValue
             
@@ -80,7 +73,19 @@ class CalendarEventsModel {
         
         guard let endOfTargetDay = endOfTargetDay else { return }
         
-        let predicate = self.eventStore.predicateForEvents(withStart: startOfToday, end: endOfTargetDay, calendars: nil)
+        let selectedCalendarIDs = Defaults[.selectedCalendarIDs]
+        print("Selected Calendar IDs: \(selectedCalendarIDs)")
+        
+        if selectedCalendarIDs.isEmpty {
+            print("No calendars selected; skipping event fetch.")
+            eventsCalendarSubject.send([]) // Send an empty event list
+            return
+        }
+        
+        let selectedCalendars = eventStore.calendars(for: .event).filter { selectedCalendarIDs.contains($0.calendarIdentifier) }
+            
+        
+        let predicate = self.eventStore.predicateForEvents(withStart: startOfToday, end: endOfTargetDay, calendars: selectedCalendars)
         let events = self.eventStore.events(matching: predicate)
         
         var newDictionaryOne = [EKEvent]()

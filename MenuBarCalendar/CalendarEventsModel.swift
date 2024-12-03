@@ -94,7 +94,9 @@ class CalendarEventsModel {
     }
     
     func scheduleUpdate() {
-        let dispatchAfter = DispatchTimeInterval.seconds(Default(.eventsRefreshTime).wrappedValue.rawValue)
+        let refreshInterval = Default(.eventsRefreshTime).wrappedValue.rawValue
+        let dispatchAfter = DispatchTimeInterval.seconds(refreshInterval)
+            
         DispatchQueue.main.asyncAfter(deadline: .now() + dispatchAfter) {
             self.fetchEvents()
             self.scheduleUpdate()

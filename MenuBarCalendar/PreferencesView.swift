@@ -26,7 +26,7 @@ struct PreferencesView: View {
                     Text("10 seconds").tag(EventsRefreshTime.seconds10)
                     Text("30 seconds").tag(EventsRefreshTime.seconds30)
                     Text("60 seconds").tag(EventsRefreshTime.seconds60)
-                    Text("10 seconds").tag(EventsRefreshTime.seconds120)
+                    Text("2 minutes").tag(EventsRefreshTime.seconds120)
                     Text("5 minutes").tag(EventsRefreshTime.seconds300)
                     Text("10 minutes").tag(EventsRefreshTime.seconds600)
                 }.frame(width: 300)

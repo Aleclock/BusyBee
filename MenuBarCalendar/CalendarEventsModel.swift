@@ -74,10 +74,8 @@ class CalendarEventsModel {
         guard let endOfTargetDay = endOfTargetDay else { return }
         
         let selectedCalendarIDs = Defaults[.selectedCalendarIDs]
-        print("Selected Calendar IDs: \(selectedCalendarIDs)")
         
         if selectedCalendarIDs.isEmpty {
-            print("No calendars selected; skipping event fetch.")
             eventsCalendarSubject.send([]) // Send an empty event list
             return
         }

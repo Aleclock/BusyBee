@@ -182,7 +182,10 @@ class StatusBarItemController {
         item.image = NSImage(systemSymbolName: "circlebadge.fill", accessibilityDescription: nil)?
             .tint(color: color)
         
-        item.submenu = NSMenu(title: "event_detail")
+        if (Defaults[.showEventDetails]) {
+            item.submenu = NSMenu(title: "event_detail")
+            createSubMenu(submenu: item.submenu!, event: event)
+        }
     }
     
     @objc private func refreshSources() {
@@ -225,7 +228,6 @@ class StatusBarItemController {
                 if (attendee.name != event.organizer?.name) {
                     submenu.addItem(createSubMenuItem(title: attendee.name!, isActive: true))
                 }
-                //print (attendee.participantType.rawValue)
             }
             submenu.addItem(NSMenuItem.separator())
         }

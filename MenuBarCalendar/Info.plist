@@ -11,6 +11,8 @@
 			<string></string>
 		</dict>
 	</array>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>

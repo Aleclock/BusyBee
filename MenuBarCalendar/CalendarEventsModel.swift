@@ -68,6 +68,7 @@ class CalendarEventsModel {
         let byDays = Default(.showEventsForPeriod).wrappedValue.rawValue
             
         let calendar = Calendar.current
+        let now = Date()
         let startOfToday = calendar.startOfDay(for: Date()) // Start of today
         let endOfTargetDay = calendar.date(byAdding: .day, value: byDays, to: startOfToday)?.addingTimeInterval(-1) // End of nth day
         
@@ -81,9 +82,10 @@ class CalendarEventsModel {
         }
         
         let selectedCalendars = eventStore.calendars(for: .event).filter { selectedCalendarIDs.contains($0.calendarIdentifier) }
-            
         
-        let predicate = self.eventStore.predicateForEvents(withStart: startOfToday, end: endOfTargetDay, calendars: selectedCalendars)
+        let startTimeForPredicate = calendar.isDateInToday(now) ? now : startOfToday
+        
+        let predicate = self.eventStore.predicateForEvents(withStart: startTimeForPredicate, end: endOfTargetDay, calendars: selectedCalendars)
         let events = self.eventStore.events(matching: predicate)
         
         var newDictionaryOne = [EKEvent]()

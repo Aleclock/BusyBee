@@ -172,25 +172,22 @@ class CalendarEventsModel {
     }
     
     /// Determine if an event is already started or not. Return a bool and the from start/to end
-    public func isEventStarted(event: EKEvent?) -> (isStarted : Bool, time: String) {
-        var result = (isStarted: false, time: "")
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.hour, .minute]
-        formatter.unitsStyle = .abbreviated
-        
-        if (event == nil) {
-            return result
+    /// Determine if an event is already started or not. Return a bool and the time difference as a TimeInterval.
+    public func isEventStarted(event: EKEvent?) -> (isStarted: Bool, timeInterval: TimeInterval) {
+        guard let event = event,
+              let startDate = event.startDate,
+              let endDate = event.endDate else {
+            // Return a default value (e.g., 0) if there's no valid event data
+            return (false, 0)
         }
-        
-        if (event!.startDate < Date()) {
-            let time = formatter.string(from: Date().distance(to: event!.endDate))!
-            result = (true, time)
+
+        let now = Date()
+        if startDate < now {
+            // Event has started; calculate time remaining until it ends
+            return (true, now.distance(to: endDate))
         } else {
-            let time = formatter.string(from: Date().distance(to: event!.startDate))
-            result = (false, time ?? "")
+            // Event has not started; calculate time until it starts
+            return (false, now.distance(to: startDate))
         }
-            
-        return result
     }
-    
 }

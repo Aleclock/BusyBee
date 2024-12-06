@@ -50,7 +50,6 @@ class StatusBarItemController {
         if event?.type == .rightMouseUp {
             print ("Doppio click")
         } else if event == nil || event?.type == .leftMouseDown || event?.type == .leftMouseUp {
-            // show the menu as normal
             isMenuOpen = true
             updateMenu()
             openMenu()
@@ -68,26 +67,50 @@ class StatusBarItemController {
         events = calendarEventsModel.eventsCalendarOne
         
         statusItem.button?.title = getUpdatedButtonValue(event: upcomingEvent)
-        /* TODO
-        if (!isMenuOpen) {
-            updateMenu()
-        }
-        */
     }
     
-    func getUpdatedButtonValue(event : EKEvent?) -> String {
+    func getUpdatedButtonValue(event: EKEvent?) -> String {
         var title = ""
-        if (event != nil) {
-            let eventTitle = calendarEventsModel.getTrimmerEventTitle(eventTitle: event!.title, maxLength: 25)
-            let isEventStarted = calendarEventsModel.isEventStarted(event: event)
         
-            title = isEventStarted.isStarted
-            ? eventTitle + " • " + isEventStarted.time + " left"
-            : eventTitle + " • in " + isEventStarted.time
+        if let event = event {
+            // Get the event title, truncated if necessary
+            let eventTitle = calendarEventsModel.getTrimmerEventTitle(eventTitle: event.title, maxLength: 25)
+            
+            // Get the event start status and time interval (in seconds)
+            let isEventStarted = calendarEventsModel.isEventStarted(event: event)
+            
+
+            if isEventStarted.isStarted {
+                // Event has started, display time remaining until the end
+                let timeLeft = formatTimeLeft(isEventStarted.timeInterval)
+                title = "\(eventTitle) • \(timeLeft) left"
+            } else {
+                // Event hasn't started, display time until the event starts
+                let timeUntilStart = formatTimeLeft(isEventStarted.timeInterval)
+                title = "\(eventTitle) • in \(timeUntilStart)"
+            }
         } else {
+            // Fallback for no event, show the current date
             title = calendarEventsModel.getFormattedDate(date: Date())
         }
+        
         return title
+    }
+    
+    /// Format a TimeInterval into a human-readable string.
+    func formatTimeLeft(_ timeInterval: TimeInterval) -> String {
+        let formatter = DateComponentsFormatter()
+        
+        // If the interval is greater than or equal to 24 hours, show days and hours
+        if timeInterval >= 86400 { // 86400 seconds = 1 day
+            formatter.allowedUnits = [.day, .hour]
+        } else {
+            // Otherwise, show hours and minutes
+            formatter.allowedUnits = [.hour, .minute]
+        }
+        
+        formatter.unitsStyle = .abbreviated
+        return formatter.string(from: timeInterval) ?? ""
     }
     
     func createSectionTitle(title : String) {
@@ -96,8 +119,6 @@ class StatusBarItemController {
             action: nil,
             keyEquivalent: ""
         )
-        
-        //titleItem.attributedTitle = NSAttributedString(string: title, attributes: [NSAttributedString.Key.font: NSFont.boldSystemFont(ofSize: 13)])
         titleItem.isEnabled = false
     }
     
@@ -108,8 +129,8 @@ class StatusBarItemController {
         if (upcomingEvent != nil) {
             let isEventStarted = calendarEventsModel.isEventStarted(event: upcomingEvent)
             let title = isEventStarted.isStarted
-                ? "Ending in " + isEventStarted.time
-                : "Upcoming in " + isEventStarted.time
+                ? "Ending in " + formatTimeLeft(isEventStarted.timeInterval)
+                : "Upcoming in " + formatTimeLeft(isEventStarted.timeInterval)
             createSectionTitle(title: title)
             createMenuItem(menu: statusItemMenu, event: upcomingEvent!)
         } else {
@@ -188,6 +209,7 @@ class StatusBarItemController {
         }
     }
     
+    // TODO Should i keep this?
     @objc private func refreshSources() {
         print ("miao")
     }

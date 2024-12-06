@@ -8,7 +8,6 @@ class CalendarEventsModel {
     
     private var grantedAccess : Bool = false
     var calendars = [EKCalendar]()
-    private var waitingSeconds : Int = 1
     let eventStore = EKEventStore()
     
     var eventsByDays = [(Date, [EKEvent])]() // TODO valutare il senso

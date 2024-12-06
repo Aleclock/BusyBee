@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E1B04852D039B190019A463 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4E1B04842D039B190019A463 /* AppIcon.icns */; };
 		4E1DF4DC2A363AA40030285F /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 4E1DF4DB2A363AA40030285F /* LaunchAtLogin */; };
 		4E2CEEE2299AEA5000D3C001 /* StatusBarItemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2CEEE1299AEA5000D3C001 /* StatusBarItemController.swift */; };
 		4E2CEEE4299AF7E000D3C001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2CEEE3299AF7E000D3C001 /* PreferencesView.swift */; };
 		4E3E4145299987E000AC5BFA /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3E4144299987E000AC5BFA /* Storage.swift */; };
 		4E5004672995B8A900B916F3 /* CalendarEventsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5004662995B8A900B916F3 /* CalendarEventsModel.swift */; };
-		4E6DC3542D03482300D7D980 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4E6DC3532D03482200D7D980 /* AppIcon.icns */; };
+		4E6DC3542D03482300D7D980 /* AppIcon_yellow.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4E6DC3532D03482200D7D980 /* AppIcon_yellow.icns */; };
 		4E83165F29A13CE600E14CD5 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 4E83165E29A13CE600E14CD5 /* Defaults */; };
 		4E83166129A13DE600E14CD5 /* DefaultsKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E83166029A13DE600E14CD5 /* DefaultsKeys.swift */; };
-		4EA7DA992CFF9E15002F8CB9 /* AppIcon_Red.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4EA7DA982CFF9E15002F8CB9 /* AppIcon_Red.icns */; };
 		4ED1DEC32995303100098B04 /* MenuBarCalendarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ED1DEC22995303100098B04 /* MenuBarCalendarApp.swift */; };
 		4ED1DEC72995303400098B04 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4ED1DEC62995303400098B04 /* Assets.xcassets */; };
 		4ED1DECB2995303400098B04 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4ED1DECA2995303400098B04 /* Preview Assets.xcassets */; };
@@ -23,13 +23,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4E1B04842D039B190019A463 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 		4E2CEEE1299AEA5000D3C001 /* StatusBarItemController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarItemController.swift; sourceTree = "<group>"; };
 		4E2CEEE3299AF7E000D3C001 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		4E3E4144299987E000AC5BFA /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		4E5004662995B8A900B916F3 /* CalendarEventsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarEventsModel.swift; sourceTree = "<group>"; };
-		4E6DC3532D03482200D7D980 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = AppIcon.icns; path = "../../../../Downloads/macos 14/AppIcon.icns"; sourceTree = "<group>"; };
+		4E6DC3532D03482200D7D980 /* AppIcon_yellow.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = AppIcon_yellow.icns; path = "../../../../Downloads/macos 14/AppIcon_yellow.icns"; sourceTree = "<group>"; };
 		4E83166029A13DE600E14CD5 /* DefaultsKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsKeys.swift; sourceTree = "<group>"; };
-		4EA7DA982CFF9E15002F8CB9 /* AppIcon_Red.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon_Red.icns; sourceTree = "<group>"; };
 		4ED1DEBF2995303100098B04 /* BusyBee.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BusyBee.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ED1DEC22995303100098B04 /* MenuBarCalendarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarCalendarApp.swift; sourceTree = "<group>"; };
 		4ED1DEC62995303400098B04 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -70,8 +70,8 @@
 		4ED1DEC12995303100098B04 /* MenuBarCalendar */ = {
 			isa = PBXGroup;
 			children = (
-				4EA7DA982CFF9E15002F8CB9 /* AppIcon_Red.icns */,
-				4E6DC3532D03482200D7D980 /* AppIcon.icns */,
+				4E6DC3532D03482200D7D980 /* AppIcon_yellow.icns */,
+				4E1B04842D039B190019A463 /* AppIcon.icns */,
 				4ED1DEC22995303100098B04 /* MenuBarCalendarApp.swift */,
 				4ED1DEC62995303400098B04 /* Assets.xcassets */,
 				4ED1DEC82995303400098B04 /* MenuBarCalendar.entitlements */,
@@ -162,9 +162,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				4ED1DECB2995303400098B04 /* Preview Assets.xcassets in Resources */,
-				4E6DC3542D03482300D7D980 /* AppIcon.icns in Resources */,
+				4E1B04852D039B190019A463 /* AppIcon.icns in Resources */,
+				4E6DC3542D03482300D7D980 /* AppIcon_yellow.icns in Resources */,
 				4ED1DEC72995303400098B04 /* Assets.xcassets in Resources */,
-				4EA7DA992CFF9E15002F8CB9 /* AppIcon_Red.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

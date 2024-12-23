@@ -12,7 +12,8 @@ BusyBee is a macOS menu bar application that keeps you informed of your upcoming
 
 1. Clone the repository:  
    ```bash  
-   git clone https://github.com/Aleclock/BusyBee.git```  
+   git clone https://github.com/Aleclock/BusyBee.git
+   ```  
 2. Open the project in Xcode.  
 3. Build and run the app to see it in action.
 

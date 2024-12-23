@@ -6,10 +6,7 @@ BusyBee is a macOS menu bar application that keeps you informed of your upcoming
 
 ## Screenshots 📸  
 
-<p float="left">
-   <img src="./screenshots/screen_menu_bar.png" width="30%"/>
-   <img src="./screenshots/screen_settings.png" width="30%"/>
-</p>
+![Preferences Screen](./screenshots/screenshot.png)
 
 ## Installation 🛠️  
 
